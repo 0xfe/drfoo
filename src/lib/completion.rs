@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{base_ext, Base, CompletionModel};
+use crate::{base_ext, Base, CompletionModel, Response};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Completion {
@@ -49,4 +49,24 @@ impl Completion {
         self.suffix = Some(suffix.into());
         self
     }
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct CompletionResponse {
+    /// The ID of the response
+    #[serde(flatten)]
+    pub meta: Response,
+
+    pub model: CompletionModel,
+
+    pub choices: Vec<ChatChoice>,
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct ChatChoice {
+    pub text: String,
+
+    pub finish_reason: String,
+
+    pub index: i64,
 }

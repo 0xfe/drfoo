@@ -1,7 +1,7 @@
 use derive_more::{From, Into};
 use serde::{Deserialize, Serialize};
 
-use crate::{base_ext, Base, ChatModel};
+use crate::{base_ext, Base, ChatModel, Response};
 
 #[derive(Debug, Clone, Deserialize, Serialize, From, Into)]
 pub struct Role(String);
@@ -87,4 +87,24 @@ impl Chat {
         self.messages.extend(messages.into_iter().map(Into::into));
         self
     }
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct ChatResponse {
+    /// The ID of the response
+    #[serde(flatten)]
+    pub meta: Response,
+
+    pub model: ChatModel,
+
+    pub choices: Vec<ChatChoice>,
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct ChatChoice {
+    pub message: Message,
+
+    pub finish_reason: String,
+
+    pub index: i64,
 }

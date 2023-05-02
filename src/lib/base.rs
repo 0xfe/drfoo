@@ -27,27 +27,34 @@ pub struct Base {
     pub max_tokens: Option<usize>,
 }
 
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct Usage {
+    /// The number of prompt tokens used for this request
+    pub prompt_tokens: i64,
+
+    /// The number of completion tokens used for this request
+    pub completion_tokens: i64,
+
+    /// The number of tokens the model could have used based on the prompt
+    pub total_tokens: i64,
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct Response {
+    /// The ID of the response
+    pub id: String,
+
+    pub object: String,
+
+    pub created: i64,
+
+    pub usage: Usage,
+}
+
 pub trait BaseExt {
     fn with_max_tokens(self, max_tokens: usize) -> Self;
     fn with_temperature(self, temperature: f64) -> Self;
     fn with_user(self, user: impl Into<String>) -> Self;
-}
-
-impl BaseExt for Base {
-    fn with_max_tokens(mut self, max_tokens: usize) -> Self {
-        self.max_tokens = Some(max_tokens);
-        self
-    }
-
-    fn with_temperature(mut self, temperature: f64) -> Self {
-        self.temperature = Some(temperature);
-        self
-    }
-
-    fn with_user(mut self, user: impl Into<String>) -> Self {
-        self.user = user.into();
-        self
-    }
 }
 
 #[macro_export]

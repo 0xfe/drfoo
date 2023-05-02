@@ -23,19 +23,49 @@ pub struct Base {
     pub max_tokens: Option<usize>,
 }
 
-impl Base {
-    pub fn with_max_tokens(mut self, max_tokens: usize) -> Self {
+pub trait BaseExt {
+    fn with_max_tokens(self, max_tokens: usize) -> Self;
+    fn with_temperature(self, temperature: f64) -> Self;
+    fn with_user(self, user: impl Into<String>) -> Self;
+}
+
+impl BaseExt for Base {
+    fn with_max_tokens(mut self, max_tokens: usize) -> Self {
         self.max_tokens = Some(max_tokens);
         self
     }
 
-    pub fn with_temperature(mut self, temperature: f64) -> Self {
+    fn with_temperature(mut self, temperature: f64) -> Self {
         self.temperature = Some(temperature);
         self
     }
 
-    pub fn with_user(mut self, user: impl Into<String>) -> Self {
+    fn with_user(mut self, user: impl Into<String>) -> Self {
         self.user = user.into();
         self
     }
+}
+
+#[macro_export]
+macro_rules! base_ext {
+    ($l:ident) => {
+        /// Add BaseExt methods to $l
+        use super::BaseExt;
+        impl BaseExt for $l {
+            fn with_max_tokens(mut self, max_tokens: usize) -> Self {
+                self.base.max_tokens = Some(max_tokens);
+                self
+            }
+
+            fn with_temperature(mut self, temperature: f64) -> Self {
+                self.base.temperature = Some(temperature);
+                self
+            }
+
+            fn with_user(mut self, user: impl Into<String>) -> Self {
+                self.base.user = user.into();
+                self
+            }
+        }
+    };
 }

@@ -9,7 +9,7 @@ async fn main() {
 
     let request = Completion::default()
         .with_prompt(prompt)
-        .with_base(Base::default().with_max_tokens(1000));
+        .with_max_tokens(1000);
 
     let response = client.do_completion(request).await.unwrap();
 

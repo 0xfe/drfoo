@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Base, CompletionModel};
+use crate::{base_ext, Base, CompletionModel};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Completion {
@@ -18,6 +18,8 @@ pub struct Completion {
     pub suffix: Option<String>,
 }
 
+base_ext!(Completion);
+
 impl<T: Into<String>> From<T> for Completion {
     fn from(prompt: T) -> Self {
         Self {
@@ -28,11 +30,6 @@ impl<T: Into<String>> From<T> for Completion {
 }
 
 impl Completion {
-    pub fn with_base(mut self, base: Base) -> Self {
-        self.base = base;
-        self
-    }
-
     pub fn with_prompt(mut self, prompt: impl Into<String>) -> Self {
         self.prompt.push(prompt.into());
         self

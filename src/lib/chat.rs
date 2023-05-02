@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Base, ChatModel};
+use crate::{base_ext, Base, ChatModel};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Message {
@@ -26,3 +26,5 @@ pub struct Chat {
     /// The list of messages to feed the model
     pub messages: Vec<Message>,
 }
+
+base_ext!(Chat);

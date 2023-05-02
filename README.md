@@ -1,5 +1,7 @@
 # drfoo
 
+DrFoo is an OpenAI client library and framework for Rust.
+
 Model compatibility: [link](https://platform.openai.com/docs/models/model-endpoint-compatibility)
 
 ```

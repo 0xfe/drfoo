@@ -3,7 +3,7 @@ extern crate log;
 
 pub mod client;
 
-pub use client::Client;
+pub use client::*;
 
 /// This method initializes [`env_logger`] from the environment, defaulting to `info` level logging.
 pub fn init_logger() {

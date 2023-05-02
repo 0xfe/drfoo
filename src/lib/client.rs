@@ -45,8 +45,25 @@ pub struct Base {
     pub max_tokens: Option<usize>,
 }
 
+impl Base {
+    pub fn with_max_tokens(mut self, max_tokens: usize) -> Self {
+        self.max_tokens = Some(max_tokens);
+        self
+    }
+
+    pub fn with_temperature(mut self, temperature: f64) -> Self {
+        self.temperature = Some(temperature);
+        self
+    }
+
+    pub fn with_user(mut self, user: impl Into<String>) -> Self {
+        self.user = user.into();
+        self
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
-pub struct Completeion {
+pub struct Completion {
     /// ID of the model to use
     #[serde(default)]
     pub model: CompletionModel,
@@ -61,12 +78,29 @@ pub struct Completeion {
     pub suffix: Option<String>,
 }
 
-impl<T: Into<String>> From<T> for Completeion {
+impl<T: Into<String>> From<T> for Completion {
     fn from(prompt: T) -> Self {
         Self {
             prompt: vec![prompt.into()],
             ..Default::default()
         }
+    }
+}
+
+impl Completion {
+    pub fn with_base(mut self, base: Base) -> Self {
+        self.base = base;
+        self
+    }
+
+    pub fn with_prompt(mut self, prompt: impl Into<String>) -> Self {
+        self.prompt.push(prompt.into());
+        self
+    }
+
+    pub fn with_suffix(mut self, suffix: impl Into<String>) -> Self {
+        self.suffix = Some(suffix.into());
+        self
     }
 }
 
@@ -133,10 +167,7 @@ impl Client {
         }
     }
 
-    pub async fn do_completion(
-        &self,
-        completion: impl Into<Completeion>,
-    ) -> anyhow::Result<String> {
+    pub async fn do_completion(&self, completion: impl Into<Completion>) -> anyhow::Result<String> {
         let completion = completion.into();
         debug!("Sending completion request: {:#?}", &completion);
         debug!(

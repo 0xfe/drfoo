@@ -8,8 +8,8 @@ pub struct Completion {
     #[serde(default)]
     pub model: CompletionModel,
 
-    #[serde(flatten)]
-    base: Base,
+    #[serde(flatten, default)]
+    pub base: Base,
 
     /// The prompt(s) to generate completions for.
     pub prompt: Vec<String>,
@@ -30,6 +30,10 @@ impl<T: Into<String>> From<T> for Completion {
 }
 
 impl Completion {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     pub fn with_prompt(mut self, prompt: impl Into<String>) -> Self {
         self.prompt.push(prompt.into());
         self

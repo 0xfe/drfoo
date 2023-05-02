@@ -1,6 +1,6 @@
 use derive_more::*;
 
-use crate::Completion;
+use crate::{Chat, Completion};
 
 #[derive(Debug, Clone, From, Into, FromStr, Display)]
 pub struct ApiKey(String);
@@ -43,9 +43,8 @@ impl Client {
         }
     }
 
-    pub async fn do_completion(&self, completion: impl Into<Completion>) -> anyhow::Result<String> {
-        let completion = completion.into();
-        debug!("Sending completion request: {:#?}", &completion);
+    pub async fn do_completion(&self, completion: &Completion) -> anyhow::Result<String> {
+        debug!("Sending completion request: {:#?}", completion);
         debug!(
             "Sending: {}",
             serde_json::to_string_pretty(&completion).unwrap()
@@ -53,7 +52,22 @@ impl Client {
         let body = self
             .client
             .post(format!("{}/completions", self.base_url))
-            .json(&completion)
+            .json(completion)
+            .send()
+            .await?
+            .text()
+            .await?;
+
+        Ok(body)
+    }
+
+    pub async fn do_chat(&self, chat: &Chat) -> anyhow::Result<String> {
+        debug!("Sending chat request: {:#?}", chat);
+        debug!("Sending: {}", serde_json::to_string_pretty(&chat).unwrap());
+        let body = self
+            .client
+            .post(format!("{}/chat/completions", self.base_url))
+            .json(chat)
             .send()
             .await?
             .text()

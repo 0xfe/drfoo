@@ -4,22 +4,26 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Base {
     /// What sampling temperature to use.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub temperature: Option<f64>,
 
     /// An alternative to sampling with temperature, called nucleus sampling,
     /// where the model considers the results of the tokens with top_p probability mass.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub top_p: Option<f64>,
 
     /// If set, the server will stream back partial progress.
     pub stream: bool,
 
     /// How many completions to generate for each prompt.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub n: Option<usize>,
 
     /// User ID to associate with the request.
     pub user: String,
 
     /// The maximum number of tokens to generate.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_tokens: Option<usize>,
 }
 

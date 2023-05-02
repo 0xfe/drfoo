@@ -79,4 +79,12 @@ impl Chat {
         self.messages.push(message.into());
         self
     }
+
+    pub fn with_messages<T: Into<Message>>(
+        mut self,
+        messages: impl IntoIterator<Item = T>,
+    ) -> Self {
+        self.messages.extend(messages.into_iter().map(Into::into));
+        self
+    }
 }

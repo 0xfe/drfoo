@@ -15,6 +15,7 @@ pub struct Completion {
     pub prompt: Vec<String>,
 
     /// The suffix to add to the completion.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub suffix: Option<String>,
 }
 
@@ -36,6 +37,11 @@ impl Completion {
 
     pub fn with_prompt(mut self, prompt: impl Into<String>) -> Self {
         self.prompt.push(prompt.into());
+        self
+    }
+
+    pub fn with_prompts(mut self, prompts: impl IntoIterator<Item = impl Into<String>>) -> Self {
+        self.prompt.extend(prompts.into_iter().map(Into::into));
         self
     }
 

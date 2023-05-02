@@ -4,10 +4,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, From, Into, FromStr, Display)]
 pub struct ApiKey(String);
 
+fn default_model() -> String {
+    // String::from("gpt-3.5-turbo")
+    String::from("davinci")
+}
+
 /// OpenAI Chat Completion API
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Base {
     /// ID of the model to use
+    #[serde(default = "default_model")]
     pub model: String,
 
     /// What sampling temperature to use.
@@ -30,6 +36,20 @@ pub struct Base {
     pub max_tokens: Option<usize>,
 }
 
+impl Default for Base {
+    fn default() -> Self {
+        Self {
+            model: default_model(),
+            temperature: None,
+            top_p: None,
+            stream: false,
+            n: None,
+            user: Some("".into()),
+            max_tokens: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Completeion {
     #[serde(flatten)]
@@ -40,6 +60,16 @@ pub struct Completeion {
 
     /// The suffix to add to the completion.
     pub suffix: Option<String>,
+}
+
+impl<T: Into<String>> From<T> for Completeion {
+    fn from(prompt: T) -> Self {
+        Self {
+            base: Base::default(),
+            prompt: vec![prompt.into()],
+            suffix: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -70,9 +100,6 @@ pub struct Client {
     /// provided API token.
     base_url: String,
 
-    /// The API token used for authentication.
-    api_key: ApiKey,
-
     /// The underlying HTTP client.
     client: reqwest::Client,
 }
@@ -80,9 +107,49 @@ pub struct Client {
 impl Client {
     pub fn new(api_key: ApiKey) -> Self {
         Self {
-            base_url: "https://openai.com/v1".into(),
-            api_key,
-            client: reqwest::Client::new(),
+            base_url: "https://api.openai.com/v1".into(),
+            client: reqwest::Client::builder()
+                .default_headers(
+                    [
+                        (
+                            reqwest::header::AUTHORIZATION,
+                            reqwest::header::HeaderValue::from_str(
+                                &format!("Bearer {}", api_key)[..],
+                            )
+                            .unwrap(),
+                        ),
+                        (
+                            reqwest::header::CONTENT_TYPE,
+                            reqwest::header::HeaderValue::from_static("application/json"),
+                        ),
+                    ]
+                    .into_iter()
+                    .collect(),
+                )
+                .build()
+                .unwrap(),
         }
+    }
+
+    pub async fn do_completion(
+        &self,
+        completion: impl Into<Completeion>,
+    ) -> anyhow::Result<String> {
+        let completion = completion.into();
+        debug!("Sending completion request: {:#?}", &completion);
+        debug!(
+            "Sending: {}",
+            serde_json::to_string_pretty(&completion).unwrap()
+        );
+        let body = self
+            .client
+            .post(format!("{}/completions", self.base_url))
+            .json(&completion)
+            .send()
+            .await?
+            .text()
+            .await?;
+
+        Ok(body)
     }
 }

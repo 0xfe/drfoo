@@ -1,18 +1,14 @@
+#[macro_use]
+extern crate log;
+
 pub mod client;
 
 pub use client::Client;
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+/// This method initializes [`env_logger`] from the environment, defaulting to `info` level logging.
+pub fn init_logger() {
+    // We use try_init here so it can by run by tests.
+    let _ = env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info"))
+        .try_init();
+    debug!("Logger initialized.");
 }

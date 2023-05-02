@@ -4,18 +4,27 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, From, Into, FromStr, Display)]
 pub struct ApiKey(String);
 
-fn default_model() -> String {
-    // String::from("gpt-3.5-turbo")
-    String::from("davinci")
+#[derive(Debug, Clone, Deserialize, Serialize, From, Into, FromStr, Display)]
+pub struct ChatModel(String);
+
+impl Default for ChatModel {
+    fn default() -> Self {
+        Self(String::from("gpt-4"))
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, From, Into, FromStr, Display)]
+pub struct CompletionModel(String);
+
+impl Default for CompletionModel {
+    fn default() -> Self {
+        Self(String::from("davinci"))
+    }
 }
 
 /// OpenAI Chat Completion API
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Base {
-    /// ID of the model to use
-    #[serde(default = "default_model")]
-    pub model: String,
-
     /// What sampling temperature to use.
     pub temperature: Option<f64>,
 
@@ -30,28 +39,18 @@ pub struct Base {
     pub n: Option<usize>,
 
     /// User ID to associate with the request.
-    pub user: Option<String>,
+    pub user: String,
 
     /// The maximum number of tokens to generate.
     pub max_tokens: Option<usize>,
 }
 
-impl Default for Base {
-    fn default() -> Self {
-        Self {
-            model: default_model(),
-            temperature: None,
-            top_p: None,
-            stream: false,
-            n: None,
-            user: Some("".into()),
-            max_tokens: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Completeion {
+    /// ID of the model to use
+    #[serde(default)]
+    pub model: CompletionModel,
+
     #[serde(flatten)]
     base: Base,
 
@@ -65,9 +64,8 @@ pub struct Completeion {
 impl<T: Into<String>> From<T> for Completeion {
     fn from(prompt: T) -> Self {
         Self {
-            base: Base::default(),
             prompt: vec![prompt.into()],
-            suffix: None,
+            ..Default::default()
         }
     }
 }
@@ -86,6 +84,10 @@ pub struct Message {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Chat {
+    /// ID of the model to use
+    #[serde(default)]
+    pub model: ChatModel,
+
     #[serde(flatten)]
     base: Base,
 

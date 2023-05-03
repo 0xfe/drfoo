@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{base_ext, Base, CompletionModel, Response};
 
+/// A Completion is a request to generate text from the provided prompt(s).
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Completion {
     /// ID of the model to use
@@ -51,6 +52,7 @@ impl Completion {
     }
 }
 
+/// A CompletionResponse is the response to a Completion request.
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct CompletionResponse {
     /// The ID of the response
@@ -59,11 +61,11 @@ pub struct CompletionResponse {
 
     pub model: CompletionModel,
 
-    pub choices: Vec<ChatChoice>,
+    pub choices: Vec<CompletionChoice>,
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
-pub struct ChatChoice {
+pub struct CompletionChoice {
     pub text: String,
 
     pub finish_reason: String,

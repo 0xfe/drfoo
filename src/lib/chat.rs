@@ -75,6 +75,11 @@ impl Chat {
         Self::default()
     }
 
+    pub fn with_model(mut self, model: impl Into<ChatModel>) -> Self {
+        self.model = model.into();
+        self
+    }
+
     pub fn with_message(mut self, message: impl Into<Message>) -> Self {
         self.messages.push(message.into());
         self

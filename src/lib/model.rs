@@ -1,6 +1,7 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
+/// `OpenAIChatModel` is an enum of the OpenAI models available for chat.
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum OpenAIChatModel {
@@ -12,10 +13,13 @@ pub enum OpenAIChatModel {
     Gpt_3dot5_turbo,
 }
 
+/// `ChatModel` is an enum of the models available for chat.
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 #[serde(untagged)]
 pub enum ChatModel {
     OpenAI(OpenAIChatModel),
+
+    /// If a model is not available in the enum, you can use a custom model.
     Custom(String),
 }
 
@@ -31,6 +35,13 @@ impl<T: Into<String>> From<T> for ChatModel {
     }
 }
 
+impl From<OpenAIChatModel> for ChatModel {
+    fn from(model: OpenAIChatModel) -> Self {
+        Self::OpenAI(model)
+    }
+}
+
+/// `OpenAICompletionModel` is an enum of the OpenAI models available for completion.
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone, Deserialize, Serialize, Display)]
 pub enum OpenAICompletionModel {
@@ -52,6 +63,8 @@ pub enum OpenAICompletionModel {
 #[serde(untagged)]
 pub enum CompletionModel {
     OpenAI(OpenAICompletionModel),
+
+    /// If a model is not available in the enum, you can use a custom model.
     Custom(String),
 }
 
@@ -64,5 +77,11 @@ impl Default for CompletionModel {
 impl<T: Into<String>> From<T> for CompletionModel {
     fn from(model: T) -> Self {
         Self::Custom(model.into())
+    }
+}
+
+impl From<OpenAICompletionModel> for CompletionModel {
+    fn from(model: OpenAICompletionModel) -> Self {
+        Self::OpenAI(model)
     }
 }

@@ -7,6 +7,7 @@ async fn main() {
     let client = Client::new(env::var("OPENAI_API_KEY").unwrap().into());
 
     let request = Chat::new()
+        .with_model(OpenAIChatModel::Gpt_4)
         .with_messages([
             "You're a linux expert and systems administrator.",
             "You're going to provide a short clever answer to my next question",

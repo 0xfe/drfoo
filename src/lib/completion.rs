@@ -36,6 +36,11 @@ impl Completion {
         Self::default()
     }
 
+    pub fn with_model(mut self, model: impl Into<CompletionModel>) -> Self {
+        self.model = model.into();
+        self
+    }
+
     pub fn with_prompt(mut self, prompt: impl Into<String>) -> Self {
         self.prompt.push(prompt.into());
         self

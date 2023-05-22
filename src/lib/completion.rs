@@ -59,6 +59,7 @@ pub struct CompletionResponse {
     #[serde(flatten)]
     pub meta: Response,
 
+    /// The model used to generate the response
     pub model: CompletionModel,
 
     pub choices: Vec<CompletionChoice>,

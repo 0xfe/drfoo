@@ -47,7 +47,10 @@ impl Client {
         &self,
         completion: &Completion,
     ) -> anyhow::Result<CompletionResponse> {
-        debug!("Sending completion request: {:#?}", completion);
+        debug!(
+            "Sending completion request: {}",
+            serde_json::to_string_pretty(completion)?
+        );
         let body = self
             .client
             .post(format!("{}/completions", self.base_url))
@@ -62,7 +65,10 @@ impl Client {
     }
 
     pub async fn do_chat(&self, chat: &Chat) -> anyhow::Result<ChatResponse> {
-        debug!("Sending chat request: {:#?}", chat);
+        debug!(
+            "Sending chat request: {}",
+            serde_json::to_string_pretty(chat)?
+        );
         let body = self
             .client
             .post(format!("{}/chat/completions", self.base_url))

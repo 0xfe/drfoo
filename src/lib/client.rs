@@ -6,7 +6,7 @@ use crate::{Chat, ChatResponse, Completion, CompletionResponse};
 pub struct ApiKey(String);
 
 /// This is a thin shim around the OpenAI HTTP client. Requires a valid API token.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Client {
     /// This base URL is used for all requests and is constructed from the
     /// provided API token.
